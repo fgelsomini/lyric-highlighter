@@ -1,0 +1,96 @@
+<!doctype html>
+<head>
+  <!-- we need jquery for this code but you guys should already have this loaded on your app -->
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <style>
+    #song .line {
+      display: block;
+      clear: both;
+    }
+    #song .hook, #song .verse {
+      margin-bottom: 20px;
+    }
+    .red {
+        color: red;
+    }
+  </style>
+  <script>
+    // This function's first argument is a target DOM ID which is the html "id" that would enclose a song. 
+    // In this case I used a div with id of "song".
+    // The second argument accepts a number, which is called "bpm" but it will simply adjust the delay
+    // between characters in milliseconds. You can do some math on it to tweak it.
+    function highlightLyrics(targetId, bpm) {
+        var delay = bpm;
+        var targetSelector = '#' + targetId;
+        var lines = $(targetSelector + ' .line');
+        var globalWordCounter = 0;
+        // The following loop prepares text for colour change.
+        // It wraps all words in a span tag.
+        // Every word in the song will be given a unique attribute so we can target it later on:
+        // i.e. <span class="word" data-word-id="33"> 
+        lines.each(function(index) {
+            var newText = [];
+            var wordArray = $(this).text().split(' ');
+            for(var j = 0;j < wordArray.length; j++) {
+              newText.push('<span class="word" data-word-id=' + globalWordCounter + '>' + wordArray[j] + '</span>');  
+              globalWordCounter ++;
+            }
+            $(this).html(newText.join(' ')); 
+        });
+
+        // This little function "printText()" below is a self-invoking function, which means
+        // it will run right away when its declared so it does not need to be called explicitly.
+        var counter = 0;
+        (function printText() {
+            var words = $(targetSelector + ' .word');
+            setTimeout(function() {
+                if (counter < words.length) {               
+                  $(targetSelector + ' span[data-word-id=' + counter + ']').addClass("red");
+                  counter ++;
+                  printText();
+                }
+            }, delay);
+        })();                        
+
+    }
+
+    // We still need to call our highlighter when the page is ready
+    $(document).ready(function() {
+      highlightLyrics('song', 200);  
+    })
+
+  </script>
+
+</head>
+<body>
+
+  <!-- You need to wrap your song in a container. When calling the highlighter, you need to pass this id to it -->
+  <div id="song">
+    <!-- these outer divs for hooks and verses are just for formatting they are ignored by script -->
+    <div class="hook">
+      <!-- if you use the above script as is, your lines will need to be wrapped in spans like this -->
+      <span class="line">Yeah, I'm in the business of terror</span>
+      <span class="line">Got a handful of stacks better grab an umbrella</span>
+      <span class="line">I make it rain, I make it rain (Oh)</span>
+      <span class="line">I'm in this bitch with the Terror</span>
+      <span class="line">Got a handful of stacks better grab an umbrella</span>
+      <span class="line">I make it rain, I make it rain (Oh), Make it rain on them hoes</span>
+      <span class="line">I make it rain, I make it rain (Oh), I make it rain on them hoes</span>
+      <span class="line">I make it rain, I make it rain (Oh), I make it rain on them hoes</span>
+      <span class="line">I make it rain, I make it rain (Oh), I make it rain on them hoes</span>
+    </div>
+
+    <div class="verse">
+      <span class="line">Cr-cr-crack-crack-crack-crack-crack, you hear that echo, man</span>
+      <span class="line">I seen the best go, cause he ain't had that metal</span>
+      <span class="line">I'm a hustler's hustler, a pusher's pusher</span>
+      <span class="line">You a buster a customer, I get you some cook up</span>
+      <span class="line">Yeah Crack is a chemist, I pack an eleven</span>
+      <span class="line">I'm mackin' the seven, I'll clap at your residence</span>
+      <span class="line">I see you in N-Y, I'll send you an invite</span>
+      <span class="line">You gon' need you a pass, that's the code that we live by</span>
+    </div>
+  </div>
+
+</body>
+</html>
